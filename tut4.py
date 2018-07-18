@@ -16,19 +16,17 @@ Y.append(1)
 app = dash.Dash(__name__)
 app.layout = html.Div(
     [
-        dcc.Graph(id = 'live-graph', animate = True)
+        dcc.Graph(id = 'live-graph', animate = True),
         dcc.Interval(
             id = 'graph-update',
             interval = 1000
-        )
+        ),
     ]
-)
+) 
 
 @app.callback(Output('live-graph', 'figure'),
-                events = [Event('graph-update'), 'interval'])
+                events = [Event('graph-update', 'interval')])
 def update_graph():
-    global X
-    global Y
     X.append(X[-1]+1)
     Y.append(Y[-1]+(Y[-1]*random.uniform(-0.1, 0.1))
 
@@ -37,4 +35,10 @@ def update_graph():
         y = list(Y),
         name = 'Scatter',
         mode = 'lines+markers '
-    )
+        )
+
+    return {'data': [data], 'layout': go.layout(xaxis = dict(range = [min(X), max(X)]),
+                                                yaxis = dict(range = [min(Y), max(Y)]),)}
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
